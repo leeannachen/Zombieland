@@ -21,11 +21,6 @@ K3 = 1.0
 
 #  wheels = [fr, fl, br, bl] 
 
-# def defineWheels（wheelNames):
-#     for x in range(3):
-#         wheels[x] = wheelNames[x]
-
-
 def base_set_wheel_helper(wheels, speeds):
   for x in range(4):
     wheels[x].setPosition(float('inf'))
@@ -50,11 +45,6 @@ def base_turn_right(wheels):
 def base_turn_left(wheels):
     speeds = [SPEED, -SPEED, SPEED, -SPEED]
     base_set_wheel_helper(wheels, speeds)
-
-
-
-
-
 
 
 #------------------CHANGE CODE ABOVE HERE ONLY--------------------------
@@ -178,14 +168,6 @@ def main():
          #called every timestep
         
         wheels = [fr, fl, br, bl] 
-
-        # if(robot.step(timestep) < 100):
-        #     base_forwards(wheels)
-        
-        #base_right(wheels)
-
-       # if(robot.step(timestep) > 100 and robot.step(timestep) < 500):
-        
         base_left(wheels)
 
         
