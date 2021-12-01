@@ -7,8 +7,54 @@ from youbot_zombie import *
    
 #------------------CHANGE CODE BELOW HERE ONLY--------------------------
 #define functions here for making decisions and using sensor inputs
-    
-    
+
+#BASE.c FUNCTION
+SPEED = 3.0
+
+DISTANCE_TOLERANCE = 0.001
+ANGLE_TOLERANCE = 0.001
+
+#stimulus coefficients
+K1 = 3.0
+K2 = 1.0
+K3 = 1.0
+
+#  wheels = [fr, fl, br, bl] 
+
+# def defineWheels（wheelNames):
+#     for x in range(3):
+#         wheels[x] = wheelNames[x]
+
+
+def base_set_wheel_helper(wheels, speeds):
+  for x in range(4):
+    wheels[x].setPosition(float('inf'))
+    wheels[x].setVelocity(speeds[x])
+
+def base_reset(wheels):
+    speeds = [0.0, 0.0, 0.0, 0.0]
+    base_set_wheel_helper(wheels, speeds)
+
+def base_forwards(wheels):
+    speeds = [SPEED, SPEED, SPEED, SPEED]
+    base_set_wheel_helper(wheels, speeds)
+
+def base_backwards(wheels):
+    speeds = [-SPEED, -SPEED, -SPEED, -SPEED]
+    base_set_wheel_helper(wheels, speeds)
+
+def base_turn_right(wheels):
+    speeds = [-SPEED, SPEED, -SPEED, SPEED]
+    base_set_wheel_helper(wheels, speeds)
+
+def base_turn_left(wheels):
+    speeds = [SPEED, -SPEED, SPEED, -SPEED]
+    base_set_wheel_helper(wheels, speeds)
+
+
+
+
+
 
 
 #------------------CHANGE CODE ABOVE HERE ONLY--------------------------
@@ -35,14 +81,14 @@ def main():
     #------------------CHANGE CODE BELOW HERE ONLY--------------------------
     
     #COMMENT OUT ALL SENSORS THAT ARE NOT USED. READ SPEC SHEET FOR MORE DETAILS
-    accelerometer = robot.getDevice("accelerometer")
-    accelerometer.enable(timestep)
+    #accelerometer = robot.getDevice("accelerometer")
+    #accelerometer.enable(timestep)
     
-    gps = robot.getDevice("gps")
-    gps.enable(timestep)
+    #gps = robot.getDevice("gps")
+    #gps.enable(timestep)
     
-    compass = robot.getDevice("compass")
-    compass.enable(timestep)
+    #compass = robot.getDevice("compass")
+    #compass.enable(timestep)
     
     camera1 = robot.getDevice("ForwardLowResBigFov")
     camera1.enable(timestep)
@@ -131,21 +177,33 @@ def main():
      #------------------CHANGE CODE BELOW HERE ONLY--------------------------   
          #called every timestep
         
+        wheels = [fr, fl, br, bl] 
+
+        # if(robot.step(timestep) < 100):
+        #     base_forwards(wheels)
         
+        #base_right(wheels)
+
+       # if(robot.step(timestep) > 100 and robot.step(timestep) < 500):
+        
+        base_left(wheels)
+
+        
+
+        #moveForward()
         #possible pseudocode for moving forward, then doing a 90 degree left turn
-        # if i <100:
-            # base_forwards() 
-            # -> can implement in Python with Webots C code (/Zombie world/libraries/youbot_control) as an example or make your own
+        # if i < 100
+        #     base_forwards() #-> can implement in Python with Webots C code (/Zombie world/libraries/youbot_control) as an example or make your own
         
-        # if i == 100: 
+        # if == 100 
         #     base_reset() 
-            # base_turn_left()  
-            # it takes about 150 timesteps for the robot to complete the turn
+        #     base_turn_left()  
+        #     #it takes about 150 timesteps for the robot to complete the turn
                  
-        # if i ==300:
+        # if i==300
         #     i = 0
         
-        # i+=50
+        # i+=1
         
         #make decisions using inputs if you choose to do so
          
