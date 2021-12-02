@@ -1,5 +1,8 @@
 """youbot_controller controller."""
 
+import cv2
+import numpy as np
+
 from controller import Robot, Motor, Camera, Accelerometer, GPS, Gyro, LightSensor, Receiver, RangeFinder, Lidar
 from controller import Supervisor
 
@@ -7,6 +10,28 @@ from youbot_zombie import *
    
 #------------------CHANGE CODE BELOW HERE ONLY--------------------------
 #define functions here for making decisions and using sensor inputs
+
+#----------------- CAMERA FUNCTIONS BELOW ----------------------------------
+
+colorsDict = {
+    [0,0.7,0.9] : "aqua",
+    [0.6, 0.2, 1] : "purple",
+    [0, 0.5, 1] : "blue",
+    [0, 0.7, 0] : "green",
+    [1, 0.2, 0.1] : "red",
+    [0.9, 0.5, 0.7] : "pink",
+    [1, 0.9, 0] : "yellow",
+    [0,0,0] : "black",
+    [0.9,0.5,0.3] : "orange"
+}
+
+def get_color_name(colorArray):
+    if colorArray in colorsDict:
+        return colorsDict.get(colorArray)
+
+
+#----------------- ROBOT MOVEMENT FUNCTIONS BELOW -------------------------
+
 
 #BASE.c FUNCTION
 #SPEED = 3.0
@@ -21,9 +46,6 @@ K3 = 1.0
 
 
 #  wheels = [fr, fl, br, bl] 
-
-
-#----------------- ROBOT MOVEMENT FUNCTIONS BELOW -------------------------
 
 
 def set_speeds(wheels, speeds):
@@ -138,7 +160,6 @@ def main():
     
     i=0
     angle = 0
-
            
 
     #------------------CHANGE CODE ABOVE HERE ONLY--------------------------
@@ -161,6 +182,32 @@ def main():
             trans = trans_field.getSFVec3f()
             robot_info = check_berry_collision(robot_info, trans[0], trans[2], robot)
             robot_info = check_zombie_collision(robot_info, trans[0], trans[2], robot)
+            
+            
+            #camera samples surrounding images every 2/16 of a second
+            cameraData = camera4.getImage()
+
+            imageArray = camera4.getImageArray()
+            image = cv2.imread(imageArray)
+            hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
+            cv2.imshow("window", image)
+            # indicate the lower and upper range for each color
+            lower_range = np.array([110,50,50])
+            upper_range = np.array([130,255,255])
+
+            mask = cv2.inRange(hsv, lower_range, upper_range)
+            cv2.imshow("Image", image)
+            cv2.imshow("Mask", mask)
+
+            if image:
+                # display the components of each pixel
+                for x in range(0,camera4.getWidth()):
+                    for y in range(0,camera4.getHeight()):
+                        red   = image[x][y][0]
+                        green = image[x][y][1]
+                        blue  = image[x][y][2]
+                        print('r='+str(red)+' g='+str(green)+' b='+str(blue))
+
             
         if(timer%16==0):
             robot_info = update_robot(robot_info)
@@ -192,20 +239,6 @@ def main():
 
         angle = angle + values[2]
         i += 1
-
-        
-        #camera
-
-        image = camera4.getImageArray()
-        if image:
-            # display the components of each pixel
-            for x in range(0,camera4.getWidth()):
-                for y in range(0,camera4.getHeight()):
-                    red   = image[x][y][0]
-                    green = image[x][y][1]
-                    blue  = image[x][y][2]
-                    print('r='+str(red)+' g='+str(green)+' b='+str(blue))
-        
 
         
         
