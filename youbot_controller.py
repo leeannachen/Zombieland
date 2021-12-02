@@ -9,7 +9,7 @@ from youbot_zombie import *
 #define functions here for making decisions and using sensor inputs
 
 #BASE.c FUNCTION
-SPEED = 3.0
+#SPEED = 3.0
 
 DISTANCE_TOLERANCE = 0.001
 ANGLE_TOLERANCE = 0.001
@@ -18,6 +18,7 @@ ANGLE_TOLERANCE = 0.001
 K1 = 3.0
 K2 = 1.0
 K3 = 1.0
+
 
 #  wheels = [fr, fl, br, bl] 
 
@@ -34,21 +35,22 @@ def stop_wheels(wheels):
     speeds = [0.0, 0.0, 0.0, 0.0]
     set_speeds(wheels, speeds)
 
-def go_forward(wheels):
+def go_forward(wheels, SPEED):
     speeds = [SPEED, SPEED, SPEED, SPEED]
     set_speeds(wheels, speeds)
 
-def go_backwards(wheels):
+def go_backwards(wheels, SPEED):
     speeds = [-SPEED, -SPEED, -SPEED, -SPEED]
     set_speeds(wheels, speeds)
 
-def turn_right(wheels):
+def turn_right(wheels, SPEED):
     speeds = [-SPEED, SPEED, -SPEED, SPEED]
     set_speeds(wheels, speeds)
 
-def turn_left(wheels):
+def turn_left(wheels, SPEED):
     speeds = [SPEED, -SPEED, SPEED, -SPEED]
     set_speeds(wheels, speeds)
+
 
 
 #------------------CHANGE CODE ABOVE HERE ONLY--------------------------
@@ -108,8 +110,8 @@ def main():
     # camera8 = robot.getDevice("BackHighRes")
     # camera8.enable(timestep)
     
-    # gyro = robot.getDevice("gyro")
-    # gyro.enable(timestep)
+    gyro = robot.getDevice("gyro")
+    gyro.enable(timestep)
     
     # lightSensor = robot.getDevice("light sensor")
     # lightSensor.enable(timestep)
@@ -135,6 +137,8 @@ def main():
     
     
     i=0
+    angle = 0
+
            
 
     #------------------CHANGE CODE ABOVE HERE ONLY--------------------------
@@ -176,16 +180,32 @@ def main():
         
         # initiate wheels
         wheels = [fr, fl, br, bl] 
+
+        values = gyro.getValues()
+
                
-        go_forward(wheels)
-        
-        if i < 16:
-            turn_left(wheels)
-       
-        if i >= 16:
-            go_forward(wheels)
-            
+        # turn right around 90 degrees 
+        if angle > -11.8:
+            turn_right(wheels, 3.0)
+        else:
+            go_forward(wheels, 3.0)
+
+        angle = angle + values[2]
         i += 1
+
+        
+        #camera
+
+        image = camera4.getImageArray()
+        if image:
+            # display the components of each pixel
+            for x in range(0,camera4.getWidth()):
+                for y in range(0,camera4.getHeight()):
+                    red   = image[x][y][0]
+                    green = image[x][y][1]
+                    blue  = image[x][y][2]
+                    print('r='+str(red)+' g='+str(green)+' b='+str(blue))
+        
 
         
         
