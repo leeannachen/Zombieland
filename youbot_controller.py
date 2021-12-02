@@ -21,30 +21,34 @@ K3 = 1.0
 
 #  wheels = [fr, fl, br, bl] 
 
-def base_set_wheel_helper(wheels, speeds):
+
+#----------------- ROBOT MOVEMENT FUNCTIONS BELOW -------------------------
+
+
+def set_speeds(wheels, speeds):
   for x in range(4):
     wheels[x].setPosition(float('inf'))
     wheels[x].setVelocity(speeds[x])
 
-def base_reset(wheels):
+def stop_wheels(wheels):
     speeds = [0.0, 0.0, 0.0, 0.0]
-    base_set_wheel_helper(wheels, speeds)
+    set_speeds(wheels, speeds)
 
-def base_forwards(wheels):
+def go_forward(wheels):
     speeds = [SPEED, SPEED, SPEED, SPEED]
-    base_set_wheel_helper(wheels, speeds)
+    set_speeds(wheels, speeds)
 
-def base_backwards(wheels):
+def go_backwards(wheels):
     speeds = [-SPEED, -SPEED, -SPEED, -SPEED]
-    base_set_wheel_helper(wheels, speeds)
+    set_speeds(wheels, speeds)
 
-def base_turn_right(wheels):
+def turn_right(wheels):
     speeds = [-SPEED, SPEED, -SPEED, SPEED]
-    base_set_wheel_helper(wheels, speeds)
+    set_speeds(wheels, speeds)
 
-def base_turn_left(wheels):
+def turn_left(wheels):
     speeds = [SPEED, -SPEED, SPEED, -SPEED]
-    base_set_wheel_helper(wheels, speeds)
+    set_speeds(wheels, speeds)
 
 
 #------------------CHANGE CODE ABOVE HERE ONLY--------------------------
@@ -80,14 +84,14 @@ def main():
     #compass = robot.getDevice("compass")
     #compass.enable(timestep)
     
-    camera1 = robot.getDevice("ForwardLowResBigFov")
-    camera1.enable(timestep)
+    # camera1 = robot.getDevice("ForwardLowResBigFov")
+    # camera1.enable(timestep)
     
-    camera2 = robot.getDevice("ForwardHighResSmallFov")
-    camera2.enable(timestep)
+    # camera2 = robot.getDevice("ForwardHighResSmallFov")
+    # camera2.enable(timestep)
     
-    camera3 = robot.getDevice("ForwardHighRes")
-    camera3.enable(timestep)
+    # camera3 = robot.getDevice("ForwardHighRes")
+    # camera3.enable(timestep)
     
     camera4 = robot.getDevice("ForwardHighResSmall")
     camera4.enable(timestep)
@@ -101,23 +105,23 @@ def main():
     camera7 = robot.getDevice("LeftLowRes")
     camera7.enable(timestep)
     
-    camera8 = robot.getDevice("BackHighRes")
-    camera8.enable(timestep)
+    # camera8 = robot.getDevice("BackHighRes")
+    # camera8.enable(timestep)
     
-    gyro = robot.getDevice("gyro")
-    gyro.enable(timestep)
+    # gyro = robot.getDevice("gyro")
+    # gyro.enable(timestep)
     
-    lightSensor = robot.getDevice("light sensor")
-    lightSensor.enable(timestep)
+    # lightSensor = robot.getDevice("light sensor")
+    # lightSensor.enable(timestep)
     
-    receiver = robot.getDevice("receiver")
-    receiver.enable(timestep)
+    # receiver = robot.getDevice("receiver")
+    # receiver.enable(timestep)
     
-    rangeFinder = robot.getDevice("range-finder")
-    rangeFinder.enable(timestep)
+    # rangeFinder = robot.getDevice("range-finder")
+    # rangeFinder.enable(timestep)
     
-    lidar = robot.getDevice("lidar")
-    lidar.enable(timestep)
+    # lidar = robot.getDevice("lidar")
+    # lidar.enable(timestep)
     
     fr = robot.getDevice("wheel1")
     fl = robot.getDevice("wheel2")
@@ -165,13 +169,26 @@ def main():
         timer += 1
         
      #------------------CHANGE CODE BELOW HERE ONLY--------------------------   
-         #called every timestep
+     
+     #------------------ Behavior Functions --------------------------
+
+     # movements: go_forward, go_backwards, turn_left, turn_right
         
+        # initiate wheels
         wheels = [fr, fl, br, bl] 
-        base_left(wheels)
+               
+        go_forward(wheels)
+        
+        if i < 16:
+            turn_left(wheels)
+       
+        if i >= 16:
+            go_forward(wheels)
+            
+        i += 1
 
         
-
+        
         #moveForward()
         #possible pseudocode for moving forward, then doing a 90 degree left turn
         # if i < 100
