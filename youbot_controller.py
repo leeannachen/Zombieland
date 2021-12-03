@@ -12,26 +12,30 @@ import struct
 
 #----------------- CAMERA FUNCTIONS BELOW ----------------------------------
 
-#BASE.c FUNCTION
+objectColors = {
 
-colorsDict = {
-
-    # [0,0.7,0.9] : "aqua",
-    # [0.6, 0.2, 1] : "purple",
-    # [0, 0.5, 1] : "blue",
-    # [0, 0.7, 0] : "green",
-    # [1, 0.2, 0.1] : "red",
-    # [0.9, 0.5, 0.7] : "pink",
-    # [1, 0.9, 0] : "yellow",
-    # [0,0,0] : "black",
-    # [0.9,0.5,0.3] : "orange",
-    # [0,0,0] : "brown", 
-    # [255, 255, 255]: "white"
+    #zombies 
+    "aqua_zombie" : [[171.9, 100, 91], [176.3, 100, 32]], #unique hue
+    "purple_zombie" : [[265.3, 82, 36], [284, 68, 100]],  #overlaps with tree strump
+    "blue_zombie" : [[202.3, 100, 95], [215.3, 100, 42]], #unique hue, previously similar to the wall
+    "green_zombie" : [[120, 100, 87],[126.9, 100, 24]],   #unique hue
+    
+    #berries
+    "orange_berry" : [[10, 55, 30], [24.3, 56, 97]],      #conflicts with red_berries, tree, and floor; 3-sides: [21.4, 62, 87], [24.3, 56, 97], [10, 55, 30] <- problematic shaded side.
+    "pink_berry" : [[295.3, 48, 31], [322,33,97]],        #unqiue hue
+    "red_berry" : [[5.3, 88, 96], [359, 82, 35]],         #huge hue range [4.7, 88, 96] to [6.6, 82, 100] is for the well lit facades while [359, 82, 35] covers the darkest side
+    "yellow_berry" : [[56, 100, 88], [58.5, 100, 31]],    #unique hue
+    
+    #world objects
+    "tree" : [[0, 10, 8], [10.4, 35, 26]],                #tree conflicts with red berries ? not sure how the tree is perceived 
+    "tree_stumps" : [[210, 6, 13], [240, 14, 5]],         #overlaps with purple zomblie 
+    "walls" : [[225, 2, 90], [226.9, 29, 44]],            #within tree stump hues
+    "floor" : [[13.6, 39, 89], [18, 21, 92]]              #within orange berries range
 }
 
 def get_color_name(colorArray):
-    if colorArray in colorsDict:
-        return colorsDict.get(colorArray)
+    if colorArray in objectColors:
+        return objectColors.get(colorArray)
 
 
 #----------------- ROBOT MOVEMENT FUNCTIONS BELOW -------------------------
