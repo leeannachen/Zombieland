@@ -1,8 +1,5 @@
 """youbot_controller controller."""
 
-import cv2
-import numpy as np
-
 from controller import Robot, Motor, Camera, Accelerometer, GPS, Gyro, LightSensor, Receiver, RangeFinder, Lidar
 from controller import Supervisor
 
@@ -13,36 +10,13 @@ from youbot_zombie import *
 
 #----------------- CAMERA FUNCTIONS BELOW ----------------------------------
 
-colorsDict = {
-    [0,0.7,0.9] : "aqua",
-    [0.6, 0.2, 1] : "purple",
-    [0, 0.5, 1] : "blue",
-    [0, 0.7, 0] : "green",
-    [1, 0.2, 0.1] : "red",
-    [0.9, 0.5, 0.7] : "pink",
-    [1, 0.9, 0] : "yellow",
-    [0,0,0] : "black",
-    [0.9,0.5,0.3] : "orange"
-}
-
-def get_color_name(colorArray):
-    if colorArray in colorsDict:
-        return colorsDict.get(colorArray)
+import struct
 
 
 #----------------- ROBOT MOVEMENT FUNCTIONS BELOW -------------------------
 
 
 #BASE.c FUNCTION
-#SPEED = 3.0
-
-DISTANCE_TOLERANCE = 0.001
-ANGLE_TOLERANCE = 0.001
-
-#stimulus coefficients
-K1 = 3.0
-K2 = 1.0
-K3 = 1.0
 
 
 #  wheels = [fr, fl, br, bl] 
@@ -138,14 +112,14 @@ def main():
     # lightSensor = robot.getDevice("light sensor")
     # lightSensor.enable(timestep)
     
-    # receiver = robot.getDevice("receiver")
-    # receiver.enable(timestep)
+    receiver = robot.getDevice("receiver")
+    receiver.enable(timestep)
     
-    # rangeFinder = robot.getDevice("range-finder")
-    # rangeFinder.enable(timestep)
+    rangeFinder = robot.getDevice("range-finder")
+    rangeFinder.enable(timestep)
     
-    # lidar = robot.getDevice("lidar")
-    # lidar.enable(timestep)
+    lidar = robot.getDevice("lidar")
+    lidar.enable(timestep)
     
     fr = robot.getDevice("wheel1")
     fl = robot.getDevice("wheel2")
@@ -182,31 +156,6 @@ def main():
             trans = trans_field.getSFVec3f()
             robot_info = check_berry_collision(robot_info, trans[0], trans[2], robot)
             robot_info = check_zombie_collision(robot_info, trans[0], trans[2], robot)
-            
-            
-            #camera samples surrounding images every 2/16 of a second
-            cameraData = camera4.getImage()
-
-            imageArray = camera4.getImageArray()
-            image = cv2.imread(imageArray)
-            hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
-            cv2.imshow("window", image)
-            # indicate the lower and upper range for each color
-            lower_range = np.array([110,50,50])
-            upper_range = np.array([130,255,255])
-
-            mask = cv2.inRange(hsv, lower_range, upper_range)
-            cv2.imshow("Image", image)
-            cv2.imshow("Mask", mask)
-
-            if image:
-                # display the components of each pixel
-                for x in range(0,camera4.getWidth()):
-                    for y in range(0,camera4.getHeight()):
-                        red   = image[x][y][0]
-                        green = image[x][y][1]
-                        blue  = image[x][y][2]
-                        print('r='+str(red)+' g='+str(green)+' b='+str(blue))
 
             
         if(timer%16==0):
@@ -228,16 +177,32 @@ def main():
         # initiate wheels
         wheels = [fr, fl, br, bl] 
 
-        values = gyro.getValues()
+        # values = gyro.getValues()
 
                
-        # turn right around 90 degrees 
-        if angle > -11.8:
-            turn_right(wheels, 3.0)
-        else:
-            go_forward(wheels, 3.0)
+        # # turn right around 90 degrees 
+        # if angle > -11.8:
+        #     turn_right(wheels, 3.0)
+        # else:
+        #     go_forward(wheels, 3.0)
 
-        angle = angle + values[2]
+        # angle = angle + values[2]
+
+        #------------RangeFinder------Depth Images
+
+        #values = rangeFinder.getRangeImage()
+        
+        if receiver.getQueueLength() > 0:
+            message=receiver.getData()
+            dataList = struct.unpack("chd" , message)
+            print(dataList[0])
+            
+
+        if i % 16 == 0:
+            turn_right(wheels, 3.0)
+        
+        go_forward(wheels, 10.0)
+
         i += 1
 
         
