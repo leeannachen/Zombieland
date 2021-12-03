@@ -4,23 +4,43 @@ from controller import Robot, Motor, Camera, Accelerometer, GPS, Gyro, LightSens
 from controller import Supervisor
 
 from youbot_zombie import *
+
+import struct
    
 #------------------CHANGE CODE BELOW HERE ONLY--------------------------
 #define functions here for making decisions and using sensor inputs
 
 #----------------- CAMERA FUNCTIONS BELOW ----------------------------------
 
-import struct
+#BASE.c FUNCTION
+
+colorsDict = {
+
+    # [0,0.7,0.9] : "aqua",
+    # [0.6, 0.2, 1] : "purple",
+    # [0, 0.5, 1] : "blue",
+    # [0, 0.7, 0] : "green",
+    # [1, 0.2, 0.1] : "red",
+    # [0.9, 0.5, 0.7] : "pink",
+    # [1, 0.9, 0] : "yellow",
+    # [0,0,0] : "black",
+    # [0.9,0.5,0.3] : "orange",
+    # [0,0,0] : "brown", 
+    # [255, 255, 255]: "white"
+}
+
+def get_color_name(colorArray):
+    if colorArray in colorsDict:
+        return colorsDict.get(colorArray)
 
 
 #----------------- ROBOT MOVEMENT FUNCTIONS BELOW -------------------------
 
 
 #BASE.c FUNCTION
+#SPEED = 3.0
 
-
-#  wheels = [fr, fl, br, bl] 
-
+# wheels = [fr, fl, br, bl]
 
 def set_speeds(wheels, speeds):
   for x in range(4):
@@ -47,7 +67,6 @@ def turn_left(wheels, SPEED):
     speeds = [SPEED, -SPEED, SPEED, -SPEED]
     set_speeds(wheels, speeds)
     
-
 #CAMERA RGB to HSV conversion
 
 def rgbToHSV(r, g, b):
@@ -86,7 +105,6 @@ def rgbToHSV(r, g, b):
     # compute v
     v = cmax * 100
     return h, s, v
-
 
 
 #------------------CHANGE CODE ABOVE HERE ONLY--------------------------
@@ -134,8 +152,8 @@ def main():
     camera4 = robot.getDevice("ForwardHighResSmall")
     camera4.enable(timestep)
     
-    camera5 = robot.getDevice("BackLowRes")
-    camera5.enable(timestep)
+    # camera5 = robot.getDevice("BackLowRes")
+    # camera5.enable(timestep)
     
     camera6 = robot.getDevice("RightLowRes")
     camera6.enable(timestep)
@@ -155,11 +173,11 @@ def main():
     receiver = robot.getDevice("receiver")
     receiver.enable(timestep)
     
-    rangeFinder = robot.getDevice("range-finder")
-    rangeFinder.enable(timestep)
+    # rangeFinder = robot.getDevice("range-finder")
+    # rangeFinder.enable(timestep)
     
-    lidar = robot.getDevice("lidar")
-    lidar.enable(timestep)
+    # lidar = robot.getDevice("lidar")
+    # lidar.enable(timestep)
     
     fr = robot.getDevice("wheel1")
     fl = robot.getDevice("wheel2")
@@ -174,7 +192,7 @@ def main():
     
     i=0
     angle = 0
-           
+
 
     #------------------CHANGE CODE ABOVE HERE ONLY--------------------------
     
@@ -196,7 +214,6 @@ def main():
             trans = trans_field.getSFVec3f()
             robot_info = check_berry_collision(robot_info, trans[0], trans[2], robot)
             robot_info = check_zombie_collision(robot_info, trans[0], trans[2], robot)
-
             
         if(timer%16==0):
             robot_info = update_robot(robot_info)
@@ -215,9 +232,8 @@ def main():
      # movements: go_forward, go_backwards, turn_left, turn_right
         
         # initiate wheels
-        wheels = [fr, fl, br, bl] 
-        
-        
+        wheels = [fr, fl, br, bl]
+
         #PSEUDO CODE
         
         if safe_berry:
@@ -238,21 +254,17 @@ def main():
             if berryExists with No Zombies:
                 
                 switchtocase SafeBerries
-            
         
         
-
-        # values = gyro.getValues()
-
-               
-        # # turn right around 90 degrees 
+        # turn right around 90 degrees 
         # if angle > -11.8:
-        #     turn_right(wheels, 3.0)
+            # turn_right(wheels, 3.0)
         # else:
-        #     go_forward(wheels, 3.0)
+            # go_forward(wheels, 3.0)
 
         # angle = angle + values[2]
-
+        
+        
         #------------RangeFinder------Depth Images
 
         #values = rangeFinder.getRangeImage()
@@ -270,6 +282,47 @@ def main():
 
         i += 1
 
+        
+        #---------------------------CAMERA CODE--------------------
+
+
+        #camera samples surrounding images every 2/16 of a second
+        if timer % 2 == 0:
+            
+            imageArray = camera4.getImageArray()
+
+            # image dimensions
+            cameraData = camera4.getImage()
+            imageWidth = camera4.getWidth()
+            imageHeight = camera4.getHeight()
+
+            if image:
+                # display the components of each pixel
+                for x in range(0,camera4.getWidth()):
+                    for y in range(0,camera4.getHeight()):
+                        red   = image[x][y][0]
+                        green = image[x][y][1]
+                        blue  = image[x][y][2]
+                        print('r='+str(red)+' g='+str(green)+' b='+str(blue))
+
+
+            # cameraData.np.getBuffer
+            #np --> get buffer .
+            # image = cv2.imread(imageArray)
+            # hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
+            # cv2.imshow("window", image)
+            # # indicate the lower and upper range for each color
+            # lower_range = np.array([110,50,50])
+            # upper_range = np.array([130,255,255])
+
+            # mask = cv2.inRange(hsv, lower_range, upper_range)
+            # cv2.imshow("Image", image)
+            # cv2.imshow("Mask", mask)
+
+            #check if any pixel is == to the 255 in the mask
+
+
+            
         
         
         #moveForward()
