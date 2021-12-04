@@ -5,12 +5,12 @@ from controller import Supervisor
 
 from youbot_zombie import *
 
-import struct
    
 #------------------CHANGE CODE BELOW HERE ONLY--------------------------
 #define functions here for making decisions and using sensor inputs
 
 #----------------- CAMERA FUNCTIONS BELOW ----------------------------------
+import struct
 
 objectColors = {
 
