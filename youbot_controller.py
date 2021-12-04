@@ -33,10 +33,11 @@ objectColors = {
     "floor" : [[13.6, 39, 89], [18, 21, 92]]              #within orange berries range
 }
 
-def get_color_name(colorArray):
-    if colorArray in objectColors:
-        return objectColors.get(colorArray)
-
+def get_object_name(hsv):
+    for key, val in objectColors:
+        if hsv == val[0] or hsv == val[1]:
+            return key
+    return -1
 
 #----------------- ROBOT MOVEMENT FUNCTIONS BELOW -------------------------
 
@@ -240,24 +241,24 @@ def main():
 
         #PSEUDO CODE
         
-        if safe_berry:
-            position berry camera to the middle
+        # if safe_berry:
+            # position berry camera to the middle
              
-            if robot_info[0] < 80 OR robot_info[1] < 70:
-               go_forward(wheels, 16.0)
-            else:
-                go_forward(wheels, 10.0)
+            # if robot_info[0] < 80 OR robot_info[1] < 70:
+               # go_forward(wheels, 16.0)
+            # else:
+                # go_forward(wheels, 10.0)
         
-        if moving forward:
-            if section2clear and section3clear:
-                go_forward(wheels, 10.0, 10.0)
-            else:
-                processSurrounding()
+        # if moving forward:
+            # if section2clear and section3clear:
+                # go_forward(wheels, 10.0, 10.0)
+            # else:
+                # processSurrounding()
         
-        if processSurrounding State:
-            if berryExists with No Zombies:
+        # if processSurrounding State:
+            # if berryExists with No Zombies:
                 
-                switchtocase SafeBerries
+                # switchtocase SafeBerries
         
         
         # turn right around 90 degrees 
@@ -288,12 +289,17 @@ def main():
 
         
         #---------------------------CAMERA CODE--------------------
-
+        
+        # for now this stores the object and the pixel locations in the image
+        # example of the pixel coordinates of 2 orange berries--> 
+        # orange_berry : [[0, 8], [0,9], [0,10], [1, 8], [1,9], [1,10].
+        #               [6, 0], [6, 1], [6, 2], [7, 0], [7, 1], [7, 2]]
+        objectsInFOV = {}
 
         #camera samples surrounding images every 2/16 of a second
-        if timer % 2 == 0:
+        if timer % 16 == 0:
             
-            imageArray = camera4.getImageArray()
+            image = camera4.getImageArray()
 
             # image dimensions
             cameraData = camera4.getImage()
@@ -308,7 +314,17 @@ def main():
                         green = image[x][y][1]
                         blue  = image[x][y][2]
                         print('r='+str(red)+' g='+str(green)+' b='+str(blue))
-
+                        #convert to HSV and identify object
+                        hsv = rgbToHSV(red, green, blue)
+                        obj = get_object_name(hsv)
+                        # check for known obj and update dictionary with pixel coor of obj
+                        if obj != -1:
+                            if obj in objectsInFOV:
+                                objectsInFOV[obj] = objectsInFOV.get(obj).append([x, y])
+                            else:
+                                objectsInFOV[obj] = [[x,y]]
+           
+                       
 
             # cameraData.np.getBuffer
             #np --> get buffer .
