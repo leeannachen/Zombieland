@@ -231,11 +231,28 @@ def speedForward(wheels,speeds):
     else:
         wander(wheels, speeds)
 
+#################### MOVEMENT FUNCTIONS ####################
 
-def testforward(wheels,speeds):
-    go_forward(wheels, speeds)
-    # testforward(wheels,speeds)
-# #------------------CHANGE CODE ABOVE HERE ONLY--------------------------
+def escapeObstacle(wheels,speeds):
+    while frontObstacle:
+        for x in range(0, 6):
+            turn_right(wheels, speeds)
+        go_backwards(wheels, speeds)
+        
+ def escapeZombie(wheels,speeds):
+    while frontObstacle or frontZombie > 0:
+        for x in range(0, 6):
+            turn_right(wheels, speeds)
+    go_forward(wheels, 14.6)
+    
+    
+ def wander(wheels, speeds):
+    for x in range(0, 16):
+        for x in range(0, 6):
+            turn_right(wheels, speeds)
+        go_forward(wheels, speeds)
+
+#------------------CHANGE CODE ABOVE HERE ONLY--------------------------
 
 
 #GLOBAL VARIABLES
@@ -369,11 +386,18 @@ def main():
         # initiate wheels        
         finishedProcess = 0
         if(timer%16==0):
-            finishedProcess = check_camera(camera4)
-            while finishedProcess == 0:
-                print("waiting for check_camera to finish")
+            check_camera(camera4)
+            
+        if frontZombie > 0:
+            escapeZombie(speeds, 14.6)
+        elif frontObstacle:
+            escapeObstacle(speed, 14.6)
+        elif frontBerry > 0:
+            go_forward(wheels, 14.6)
+        else:
+            wander(speeds, 14.6)
+        
 
-        #wander(wheels, 3.0) 
         #------------------CHANGE CODE ABOVE HERE ONLY--------------------------
         
         
