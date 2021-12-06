@@ -5,14 +5,72 @@ from controller import Supervisor
 
 from youbot_zombie import *
 
-   
 #------------------CHANGE CODE BELOW HERE ONLY--------------------------
 #define functions here for making decisions and using sensor inputs
 
-#----------------- CAMERA FUNCTIONS ----------------------------------
-import struct
+#----------------- CAMERA FUNCTIONS BELOW
+def check_camera():
+    obstacleProportion = {}
+        
+    image = camera4.getImageArray()
+    cameraData = camera4.getImage()
+    
+    imageColors = [[0 for x in range(imageWidth)] for y in range(imageHeight)]
+
+    if image:
+        for x in range(0,camera4.getWidth()):
+            for y in range(0,camera4.getHeight()):
+                red   = image[x][y][0]
+                green = image[x][y][1]
+                blue  = image[x][y][2]
+                print('r='+str(red)+' g='+str(green)+' b='+str(blue))
+                hsv = rgbToHSV(red, green, blue)
+                obj = get_object_name(hsv)
+                if obj != -1:
+                    if obj in ["pink_berry", "orange_berry", "red_berry", "yellow_berry"]:
+                        pixelAngle = x/imageWidth * 100
+                        if pixelAngle > 25 or pixelAngle < 75:
+                            frontBerry = 1
+                            frontZombie = 0
+                    if obj in ["aqua_zombie", "blue_zombie", "purple_zombie", "green_zombie"]:
+                        if check_receiver == 1:
+                            frontBerry = 0
+                            frontZombie = 1
+                    if obj == "walls":
+                        obstacleProportion[obj] += 1
+                        if obstacleProprtion.get(obj)/(imageWidth * imageHeight) >= .80:
+                            frontObstacle = True
+                    if obj == "tree" or obj == "tree_stumps":
+                        if y < imageHeight/2:
+                            obstacleProportion[obj] += 1
+                        if obstacleProprtion.get(obj)/(imageWidth * imageHeight / 2) >= .40:
+                            frontObstacle = True
+                        
+    # recursive algo that returns a dictionary of objects and their coordinate center
+    # def get_object_centers(coordinatesDict, imageColors, w, h, blobCounter, leftmost, rightmost):
+        # for x in range(0,w):
+            # for y in range(0,h):
+                # if imageColors[x][y] == 0:
+                    # return 0
+                # if imageColors[x][y] != 0:
+                    # if x < leftmost:
+                        # leftmost = x
+                    # if y > rightmost:
+                        # rightmost = y
+                    # coordinatesDict[blobCounter] = [x,y]
+                    # blobCounter += 1
+                    # imageColors[x][y] = 0
+                    # return 1 + get_blob_center(imageColors[x][y+1]
+                # when we increment the blobCounter, basically, end of one blob, we 
+                # have to reset the leftmost and rightmost counters       
+     # use the imageColor matrix to get the number of blobs and their centers
+     # and populate them into the objectCoordinates dictionary
+     # objectCoordinates = get_object_centers(objectCoordinates, imageColors, imageWidth, imageHeight, blobCounter, leftmost, rightmost)
+
+#----------------- COLORFUNCTIONS BELOW
 
 objectColors = {
+
     #zombies 
     "aqua_zombie" : [[171.9, 100, 91], [176.3, 100, 32]], #unique hue
     "purple_zombie" : [[265.3, 82, 36], [284, 68, 100]],  #overlaps with tree strump
@@ -29,16 +87,9 @@ objectColors = {
     "tree" : [[0, 10, 8], [10.4, 35, 26]],                #tree conflicts with red berries ? not sure how the tree is perceived 
     "tree_stumps" : [[210, 6, 13], [240, 14, 5]],         #overlaps with purple zomblie 
     "walls" : [[225, 2, 90], [226.9, 29, 44]],            #within tree stump hues
-    # "floor" : [[13.6, 39, 89], [18, 21, 92]]              #within orange berries range
+    #"floor" : [[13.6, 39, 89], [18, 21, 92]]              #within orange berries range
 }
 
-def get_object_name(hsv):
-    for key, val in objectColors:
-        if hsv == val[0] or hsv == val[1]:
-            return key
-    return -1
-
-# RGB to HSV conversion
 def rgbToHSV(r, g, b):
  
     # R, G, B values are divided by 255
@@ -76,12 +127,13 @@ def rgbToHSV(r, g, b):
     v = cmax * 100
     return h, s, v
 
-#----------------- ROBOT MOVEMENT FUNCTIONS -------------------------
-
-#BASE.c FUNCTION
-#SPEED = 3.0
-
-# wheels = [fr, fl, br, bl]
+def get_object_name(hsv):
+    for key, val in objectColors:
+        if hsv == val[0] or hsv == val[1]:
+            return key
+    return -1
+        
+#----------------- ROBOT MOVEMENT FUNCTIONS
 
 def set_speeds(wheels, speeds):
   for x in range(4):
@@ -108,22 +160,25 @@ def turn_left(wheels, SPEED):
     speeds = [SPEED, -SPEED, SPEED, -SPEED]
     set_speeds(wheels, speeds)
 
-#------------------------STATE MACHINE FUNCTIONS----------------------------
+#------------------RECEIVER FUNCTIONS
 
-def moveForward(wheels, speeds):
-    if fontZombie > 0:
-        escapeZombie(wheels, speeds)
-    elif frontBerry > 0:
-        moveForward(wheels, speeds)
+def check_receiver():
+    if receiver.getQueueLength() > 0:
+        # message=receiver.getData()
+        # dataList = struct.unpack("chd" , message)
+        return 1
     else:
-        wander(wheels, speeds)
+        return 0
 
-def escapeZombie(wheels, speeds):
-    while fontZombie > 0:
-        turn_right(wheels, SPEED)
-
-        
 #------------------CHANGE CODE ABOVE HERE ONLY--------------------------
+
+
+#GLOBAL VARIABLES
+imageWidth = 0
+imageHeight = 0
+frontberry = 0
+frontZombie = 0
+frontObstacle = False
 
 def main():
     robot = Supervisor()
@@ -180,8 +235,8 @@ def main():
     # camera8 = robot.getDevice("BackHighRes")
     # camera8.enable(timestep)
     
-    gyro = robot.getDevice("gyro")
-    gyro.enable(timestep)
+    # gyro = robot.getDevice("gyro")
+    # gyro.enable(timestep)
     
     # lightSensor = robot.getDevice("light sensor")
     # lightSensor.enable(timestep)
@@ -212,6 +267,8 @@ def main():
 
     #------------------CHANGE CODE ABOVE HERE ONLY--------------------------
     
+    imageWidth = camera4.getWidth()
+    imageHeight = camera4.getHeight()
     
     while(robot_not_dead == 1):
         
@@ -244,81 +301,49 @@ def main():
      #------------------CHANGE CODE BELOW HERE ONLY--------------------------   
      
      #------------------ Behavior Functions --------------------------
+
+     # movements: go_forward, go_backwards, turn_left, turn_right
         
         # initiate wheels
         wheels = [fr, fl, br, bl]
-        
-        
-        #------------RangeFinder------Depth Images
 
-        #values = rangeFinder.getRangeImage()
+        #PSEUDO CODE
         
-        if receiver.getQueueLength() > 0:
-            message=receiver.getData()
-            dataList = struct.unpack("chd" , message)
-            print(dataList[0])
-            
+        # if safe_berry:
+            # position berry camera to the middle
+             
+            # if robot_info[0] < 80 OR robot_info[1] < 70:
+               # go_forward(wheels, 16.0)
+            # else:
+                # go_forward(wheels, 10.0)
+        
+        # if moving forward:
+            # if section2clear and section3clear:
+                # go_forward(wheels, 10.0, 10.0)
+            # else:
+                # processSurrounding()
+        
+        # if processSurrounding State:
+            # if berryExists with No Zombies:
+                
+                # switchtocase SafeBerries
+        
+        
+        # turn right around 90 degrees 
+        # if angle > -11.8:
+            # turn_right(wheels, 3.0)
+        # else:
+            # go_forward(wheels, 3.0)
 
+        # angle = angle + values[2]
+        
+        
         if i % 16 == 0:
             turn_right(wheels, 3.0)
         
         go_forward(wheels, 10.0)
 
         i += 1
-
-        
-        #---------------------------CAMERA CODE--------------------
-        
-        # for now this stores the object and the pixel locations in the image
-        # example of the pixel coordinates of 2 orange berries--> 
-        # orange_berry : [[0, 8], [0,9], [0,10], [1, 8], [1,9], [1,10].
-        #               [6, 0], [6, 1], [6, 2], [7, 0], [7, 1], [7, 2]]
-        objectsInFOV = {}
-
-        #camera samples surrounding images every 2/16 of a second
-        if timer % 16 == 0:
-            
-            image = camera4.getImageArray()
-
-            # image dimensions
-            cameraData = camera4.getImage()
-            imageWidth = camera4.getWidth()
-            imageHeight = camera4.getHeight()
-
-            if image:
-                # display the components of each pixel
-                for x in range(0,camera4.getWidth()):
-                    for y in range(0,camera4.getHeight()):
-                        red   = image[x][y][0]
-                        green = image[x][y][1]
-                        blue  = image[x][y][2]
-                        print('r='+str(red)+' g='+str(green)+' b='+str(blue))
-                        #convert to HSV and identify object
-                        hsv = rgbToHSV(red, green, blue)
-                        obj = get_object_name(hsv)
-                        # check for known obj and update dictionary with pixel coor of obj
-                        if obj != -1:
-                            if obj in objectsInFOV:
-                                objectsInFOV[obj] = objectsInFOV.get(obj).append([x, y])
-                            else:
-                                objectsInFOV[obj] = [[x,y]]
-           
-                       
-
-            # cameraData.np.getBuffer
-            #np --> get buffer .
-            # image = cv2.imread(imageArray)
-            # hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
-            # cv2.imshow("window", image)
-            # # indicate the lower and upper range for each color
-            # lower_range = np.array([110,50,50])
-            # upper_range = np.array([130,255,255])
-
-            # mask = cv2.inRange(hsv, lower_range, upper_range)
-            # cv2.imshow("Image", image)
-            # cv2.imshow("Mask", mask)
-
-            #check if any pixel is == to the 255 in the mask
 
         #------------------CHANGE CODE ABOVE HERE ONLY--------------------------
         
