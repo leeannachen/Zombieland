@@ -251,16 +251,15 @@ def wander(wheels, speeds):
     for x in range(0, 6):
         turn_right(wheels, speeds)
     go_forward(wheels, speeds)
-
-#------------------CHANGE CODE ABOVE HERE ONLY--------------------------
-
-
+    
 #GLOBAL VARIABLES
 imageWidth = 0
 imageHeight = 0
 frontBerry = 0
 frontZombie = 0
 frontObstacle = False
+
+#------------------CHANGE CODE ABOVE HERE ONLY--------------------------
 
 def main():
     robot = Supervisor()
@@ -347,10 +346,13 @@ def main():
     angle = 0
 
     wheels = [fr, fl, br, bl]
-    #------------------CHANGE CODE ABOVE HERE ONLY--------------------------
     
+        
     imageWidth = camera4.getWidth()
     imageHeight = camera4.getHeight()
+    
+    #------------------CHANGE CODE ABOVE HERE ONLY--------------------------
+  
     
     while(robot_not_dead == 1):
         
