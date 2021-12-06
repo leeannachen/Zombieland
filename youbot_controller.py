@@ -9,7 +9,7 @@ from youbot_zombie import *
 #define functions here for making decisions and using sensor inputs
 
 #################### CAMERA FUNCTIONS BELOW ####################
-def check_camera():
+def check_camera(camera4):
     obstacleProportion = {}
         
     image = camera4.getImageArray()
@@ -173,31 +173,49 @@ def check_receiver():
 #################### STATE MACHINE FUNCTIONS ####################
 
 # For berries world:
-def moveForward(wheels, speeds):
-    go_forward(wheels, 3.0)
-
+def moveForward(camera, receiver, wheels, speeds):
+    check_camera(camera)
+    check_receiver()
+    go_forward(wheels, speeds)
     if frontObstacle:
-        unstuck(wheels,speeds)
+        unstuck(camera, receiver, wheels, speeds)
     elif frontBerry > 0:
         moveForward(wheels,speeds)
     else:
-        wander(wheels, speeds)
+        wander(camera, receiver, wheels, speeds)
 
 
-def wander(wheels, speeds):
+def wander(camera, receiver, wheels, speeds):
+    check_camera(camera)
+    check_receiver()
     # do a 420 degree sping
     for x in range(0, 16):
         if (frontBerry > 0):
-            moveForward(wheels,speeds)
-        turn_right(wheels, 3.0)
-        go_forward(wheels, 3.0)
-    moveForward(wheels,speeds)
+            moveForward(camera, receiver, wheels, speeds)
+        turn_right(wheels, speeds)
+        turn_right(wheels, speeds)
+        turn_right(wheels, speeds)
+        turn_right(wheels, speeds)
+        turn_right(wheels, speeds)
+        go_forward(wheels, speeds)
+    moveForward(camera, receiver, wheels, speeds)
 
-def unstuck(wheels,speeds):
+
+def unstuck(camera, receiver, wheels,speeds):
+    check_camera(camera)
+    check_receiver()
     while frontObstacle:
-        turn_right(wheels, 3.0)
-        go_backwards(wheels, 3.0)
-    wander(wheels, speeds)
+        turn_right(wheels, speeds)
+        turn_right(wheels, speeds)
+        turn_right(wheels, speeds)
+        turn_right(wheels, speeds)
+        turn_right(wheels, speeds)
+        go_backwards(wheels, speeds)
+        check_camera()
+    wander(camera, receiver, wheels, speeds)
+    
+def test(camera):
+    check_camera(camera)
 
 #------------------CHANGE CODE ABOVE HERE ONLY--------------------------
 
@@ -332,8 +350,10 @@ def main():
         # initiate wheels
         wheels = [fr, fl, br, bl]
         
-        wander(wheels,3.0) 
+        # wander(camera4, receiver, wheels, 3.0) 
         
+        # test(camera4)
+        check_camera(4)
         # if i % 16 == 0:
             # turn_right(wheels, 3.0)
         
