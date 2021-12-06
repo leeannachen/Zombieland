@@ -97,7 +97,7 @@ objectColors = {
     #world objects
     "tree" : [[0, 10, 8], [10.4, 35, 26]],                #tree conflicts with red berries ? not sure how the tree is perceived 
     "tree_stumps" : [[210, 6, 13], [240, 14, 5]],         #overlaps with purple zomblie 
-    "walls" : [[225, 2, 90], [226.9, 29, 44]],            #within tree stump hues
+    "walls" : [[225, 2, 90], [227, 29, 44]],            #within tree stump hues
     #"floor" : [[13.6, 39, 89], [18, 21, 92]]              #within orange berries range
 }
 
