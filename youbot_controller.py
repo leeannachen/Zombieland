@@ -64,7 +64,28 @@ def get_object_name(hsv):
         # return 0
     # else:
         
-    
+#------------------State Machine Functions Below--------------------------
+
+        #PSEUDO CODE
+        
+        # if safe_berry:
+            # position berry camera to the middle
+             
+            # if robot_info[0] < 80 OR robot_info[1] < 70:
+               # go_forward(wheels, 16.0)
+            # else:
+                # go_forward(wheels, 10.0)
+        
+        # if moving forward:
+            # if section2clear and section3clear:
+                # go_forward(wheels, 10.0, 10.0)
+            # else:
+                # processSurrounding()
+        
+        # if processSurrounding State:
+            # if berryExists with No Zombies:
+                
+                # switchtocase SafeBerries  
         
 #----------------- ROBOT MOVEMENT FUNCTIONS BELOW -------------------------
 
@@ -264,29 +285,7 @@ def main():
      # movements: go_forward, go_backwards, turn_left, turn_right
         
         # initiate wheels
-        wheels = [fr, fl, br, bl]
-
-        #PSEUDO CODE
-        
-        # if safe_berry:
-            # position berry camera to the middle
-             
-            # if robot_info[0] < 80 OR robot_info[1] < 70:
-               # go_forward(wheels, 16.0)
-            # else:
-                # go_forward(wheels, 10.0)
-        
-        # if moving forward:
-            # if section2clear and section3clear:
-                # go_forward(wheels, 10.0, 10.0)
-            # else:
-                # processSurrounding()
-        
-        # if processSurrounding State:
-            # if berryExists with No Zombies:
-                
-                # switchtocase SafeBerries
-        
+        wheels = [fr, fl, br, bl] 
         
         # turn right around 90 degrees 
         # if angle > -11.8:
