@@ -14,37 +14,35 @@ def check_camera(camera4):
         
     image = camera4.getImageArray()
     cameraData = camera4.getImage()
-    
-    imageColors = [[0 for x in range(imageWidth)] for y in range(imageHeight)]
-
+        
     if image:
-        for x in range(0,camera4.getWidth()):
-            for y in range(0,camera4.getHeight()):
+        for x in range(0, imageWidth):
+            for y in range(0,imageHeight):
                 red   = image[x][y][0]
                 green = image[x][y][1]
                 blue  = image[x][y][2]
                 print('r='+str(red)+' g='+str(green)+' b='+str(blue))
-                hsv = rgbToHSV(red, green, blue)
-                obj = get_object_name(hsv)
-                if obj != -1:
-                    if obj in ["pink_berry", "orange_berry", "red_berry", "yellow_berry"]:
-                        pixelAngle = x/imageWidth * 100
-                        if pixelAngle > 25 or pixelAngle < 75:
-                            frontBerry = 1
-                            frontZombie = 0
-                    if obj in ["aqua_zombie", "blue_zombie", "purple_zombie", "green_zombie"]:
-                        if check_receiver == 1:
-                            frontBerry = 0
-                            frontZombie = 1
-                    if obj == "walls":
-                        obstacleProportion[obj] += 1
-                        if obstacleProprtion.get(obj)/(imageWidth * imageHeight) >= .80:
-                            frontObstacle = True
-                    if obj == "tree" or obj == "tree_stumps":
-                        if y < imageHeight/2:
-                            obstacleProportion[obj] += 1
-                        if obstacleProprtion.get(obj)/(imageWidth * imageHeight / 2) >= .40:
-                            frontObstacle = True
+                # hsv = rgbToHSV(red, green, blue)
+                # obj = get_object_name(hsv)
+                # if obj != -1:
+                    # if obj in ["pink_berry", "orange_berry", "red_berry", "yellow_berry"]:
+                        # pixelAngle = x/imageWidth * 100
+                        # if pixelAngle > 25 or pixelAngle < 75:
+                            # frontBerry = 1
+                            # frontZombie = 0
+                    # if obj in ["aqua_zombie", "blue_zombie", "purple_zombie", "green_zombie"]:
+                        # if check_receiver == 1:
+                            # frontBerry = 0
+                            # frontZombie = 1
+                    # if obj == "walls":
+                        # obstacleProportion[obj] += 1
+                        # if obstacleProprtion.get(obj)/(imageWidth * imageHeight) >= .80:
+                            # frontObstacle = True
+                    # if obj == "tree" or obj == "tree_stumps":
+                        # if y < imageHeight/2:
+                            # obstacleProportion[obj] += 1
+                        # if obstacleProprtion.get(obj)/(imageWidth * imageHeight / 2) >= .40:
+                            # frontObstacle = True
                         
     # recursive algo that returns a dictionary of objects and their coordinate center
     # def get_object_centers(coordinatesDict, imageColors, w, h, blobCounter, leftmost, rightmost):
@@ -183,16 +181,15 @@ def moveForward(wheels, speeds):
     else:
         wander(wheels, speeds)
 
-
 def wander(wheels, speeds):
     # do a 420 degree sping
     for x in range(0, 16):
         if (frontBerry > 0):
-            moveForward(wheels, speeds)
+            speedForward(wheels,speeds):
         for x in range(0, 6):
             turn_right(wheels, speeds)
         go_forward(wheels, speeds)
-    moveForward( wheels, speeds)
+    moveForward(wheels, speeds)
 
 
 def unstuck(wheels,speeds):
@@ -209,16 +206,14 @@ def escapeZombie(wheels,speeds):
             turn_right(wheels, speeds)
     moveForward(wheels, speeds)
 
-    
+
 def speedForward(wheels,speeds):
     go_forward(wheels, 5.0)
     if frontObstacle:
         unstuck(wheels, speeds)
     elif frontZombie > 0:
         escapeZombie(wheels, speeds)
-    elif frontBerry > 0:
-        speedForward(wheels,speeds)
-    else:
+    elif frontBerry == 0:
         wander(wheels, speeds)
 
 #------------------CHANGE CODE ABOVE HERE ONLY--------------------------
@@ -315,6 +310,9 @@ def main():
     i=0
     angle = 0
 
+    # initiate wheels
+    wheels = [fr, fl, br, bl]
+    wander(wheels, 3.0) 
 
     #------------------CHANGE CODE ABOVE HERE ONLY--------------------------
     
@@ -350,15 +348,12 @@ def main():
         timer += 1
         
      #------------------CHANGE CODE BELOW HERE ONLY--------------------------  
-    
-        # initiate wheels
-        wheels = [fr, fl, br, bl]
+   
         
-        if(timer%16==0):
-            check_camera(camera4)
-            check_receiver(receiver)
+        # if(timer%16==0):
+        # check_camera(camera4)
+        # check_receiver(receiver)
 
-        wander(wheels, 3.0) 
         #------------------CHANGE CODE ABOVE HERE ONLY--------------------------
         
         
