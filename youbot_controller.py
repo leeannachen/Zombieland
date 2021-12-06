@@ -172,50 +172,54 @@ def check_receiver():
     
 #################### STATE MACHINE FUNCTIONS ####################
 
-# For berries world:
-def moveForward(camera, receiver, wheels, speeds):
-    check_camera(camera)
-    check_receiver()
+def moveForward(wheels, speeds):
     go_forward(wheels, speeds)
     if frontObstacle:
-        unstuck(camera, receiver, wheels, speeds)
+        unstuck(wheels, speeds)
+    elif frontZombie > 0:
+        escapeZombie(wheels, speeds)
     elif frontBerry > 0:
-        moveForward(wheels,speeds)
+        speedForward(wheels,speeds)
     else:
-        wander(camera, receiver, wheels, speeds)
+        wander(wheels, speeds)
 
 
-def wander(camera, receiver, wheels, speeds):
-    check_camera(camera)
-    check_receiver()
+def wander(wheels, speeds):
     # do a 420 degree sping
     for x in range(0, 16):
         if (frontBerry > 0):
-            moveForward(camera, receiver, wheels, speeds)
-        turn_right(wheels, speeds)
-        turn_right(wheels, speeds)
-        turn_right(wheels, speeds)
-        turn_right(wheels, speeds)
-        turn_right(wheels, speeds)
+            moveForward(wheels, speeds)
+        for x in range(0, 6):
+            turn_right(wheels, speeds)
         go_forward(wheels, speeds)
-    moveForward(camera, receiver, wheels, speeds)
+    moveForward( wheels, speeds)
 
 
-def unstuck(camera, receiver, wheels,speeds):
-    check_camera(camera)
-    check_receiver()
+def unstuck(wheels,speeds):
     while frontObstacle:
-        turn_right(wheels, speeds)
-        turn_right(wheels, speeds)
-        turn_right(wheels, speeds)
-        turn_right(wheels, speeds)
-        turn_right(wheels, speeds)
+        for x in range(0, 6):
+            turn_right(wheels, speeds)
         go_backwards(wheels, speeds)
-        check_camera()
-    wander(camera, receiver, wheels, speeds)
+    wander(wheels, speeds)
+
+
+def escapeZombie(wheels,speeds):
+    while frontObstacle or frontZombie > 0:
+        for x in range(0, 6):
+            turn_right(wheels, speeds)
+    moveForward(wheels, speeds)
+
     
-def test(camera):
-    check_camera(camera)
+def speedForward(wheels,speeds):
+    go_forward(wheels, 5.0)
+    if frontObstacle:
+        unstuck(wheels, speeds)
+    elif frontZombie > 0:
+        escapeZombie(wheels, speeds)
+    elif frontBerry > 0:
+        speedForward(wheels,speeds)
+    else:
+        wander(wheels, speeds)
 
 #------------------CHANGE CODE ABOVE HERE ONLY--------------------------
 
@@ -350,17 +354,11 @@ def main():
         # initiate wheels
         wheels = [fr, fl, br, bl]
         
-        # wander(camera4, receiver, wheels, 3.0) 
-        
-        # test(camera4)
-        check_camera(4)
-        # if i % 16 == 0:
-            # turn_right(wheels, 3.0)
-        
-        # go_forward(wheels, 10.0)
+        if(timer%16==0):
+            check_camera(camera4)
+            check_receiver(receiver)
 
-        # i += 1
-
+        wander(wheels, 3.0) 
         #------------------CHANGE CODE ABOVE HERE ONLY--------------------------
         
         
