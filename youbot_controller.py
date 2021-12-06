@@ -205,7 +205,7 @@ def unstuck(wheels,speeds):
 #GLOBAL VARIABLES
 imageWidth = 0
 imageHeight = 0
-frontberry = 0
+frontBerry = 0
 frontZombie = 0
 frontObstacle = False
 
@@ -332,18 +332,18 @@ def main():
         # initiate wheels
         wheels = [fr, fl, br, bl]
         
+        wander(wheels,3.0) 
         
-        if i % 16 == 0:
-            turn_right(wheels, 3.0)
+        # if i % 16 == 0:
+            # turn_right(wheels, 3.0)
         
-        go_forward(wheels, 10.0)
+        # go_forward(wheels, 10.0)
 
-        i += 1
+        # i += 1
 
         #------------------CHANGE CODE ABOVE HERE ONLY--------------------------
         
         
     return 0   
-
-
+    
 main()
