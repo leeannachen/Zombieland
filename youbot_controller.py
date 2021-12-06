@@ -85,7 +85,7 @@ objectColors = {
     "tree" : [[0, 10, 8], [10.4, 35, 26]],                #tree conflicts with red berries ? not sure how the tree is perceived 
     "tree_stumps" : [[210, 6, 13], [240, 14, 5]],         #overlaps with purple zomblie 
     "walls" : [[225, 2, 90], [226.9, 29, 44]],            #within tree stump hues
-    #"floor" : [[13.6, 39, 89], [18, 21, 92]]              #within orange berries range
+    #"floor" : [[13.6, 39, 89], [18, 21, 92]]             #within orange berries range
 }
 
 def rgbToHSV(r, g, b):
@@ -185,7 +185,7 @@ def wander(wheels, speeds):
     # do a 420 degree sping
     for x in range(0, 16):
         if (frontBerry > 0):
-            speedForward(wheels,speeds):
+            speedForward(wheels,speeds)
         for x in range(0, 6):
             turn_right(wheels, speeds)
         go_forward(wheels, speeds)
