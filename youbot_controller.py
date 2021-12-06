@@ -5,11 +5,11 @@ from controller import Supervisor
 
 from youbot_zombie import *
 
-   
 #------------------CHANGE CODE BELOW HERE ONLY--------------------------
 #define functions here for making decisions and using sensor inputs
 
 #----------------- CAMERA FUNCTIONS BELOW ----------------------------------
+
 import struct
 
 objectColors = {
@@ -30,7 +30,7 @@ objectColors = {
     "tree" : [[0, 10, 8], [10.4, 35, 26]],                #tree conflicts with red berries ? not sure how the tree is perceived 
     "tree_stumps" : [[210, 6, 13], [240, 14, 5]],         #overlaps with purple zomblie 
     "walls" : [[225, 2, 90], [226.9, 29, 44]],            #within tree stump hues
-    "floor" : [[13.6, 39, 89], [18, 21, 92]]              #within orange berries range
+    #"floor" : [[13.6, 39, 89], [18, 21, 92]]              #within orange berries range
 }
 
 def get_object_name(hsv):
@@ -38,7 +38,34 @@ def get_object_name(hsv):
         if hsv == val[0] or hsv == val[1]:
             return key
     return -1
-
+    
+# recursive algo that returns a dictionary of objects and their coordinate center
+# def get_object_centers(coordinatesDict, imageColors, w, h, blobCounter, leftmost, rightmost):
+    # for x in range(0,w):
+        # for y in range(0,h):
+            # if imageColors[x][y] == 0:
+                # return 0
+            # if imageColors[x][y] != 0:
+                # if x < leftmost:
+                    # leftmost = x
+                # if y > rightmost:
+                    # rightmost = y
+                # coordinatesDict[blobCounter] = [x,y]
+                # blobCounter += 1
+                # imageColors[x][y] = 0
+                # return 1 + get_blob_center(imageColors[x][y+1]
+            # when we increment the blobCounter, basically, end of one blob, we 
+            # have to reset the leftmost and rightmost counters
+               
+# def get_blob_center(pixel):
+    # if pixel == 0:
+        # return 0
+    # if pixel == NULL:
+        # return 0
+    # else:
+        
+    
+        
 #----------------- ROBOT MOVEMENT FUNCTIONS BELOW -------------------------
 
 
@@ -169,8 +196,8 @@ def main():
     # camera8 = robot.getDevice("BackHighRes")
     # camera8.enable(timestep)
     
-    gyro = robot.getDevice("gyro")
-    gyro.enable(timestep)
+    # gyro = robot.getDevice("gyro")
+    # gyro.enable(timestep)
     
     # lightSensor = robot.getDevice("light sensor")
     # lightSensor.enable(timestep)
@@ -290,11 +317,13 @@ def main():
         
         #---------------------------CAMERA CODE--------------------
         
-        # for now this stores the object and the pixel locations in the image
+        # objectsInFOV stores the object and the pixel locations in the image
         # example of the pixel coordinates of 2 orange berries--> 
         # orange_berry : [[0, 8], [0,9], [0,10], [1, 8], [1,9], [1,10].
         #               [6, 0], [6, 1], [6, 2], [7, 0], [7, 1], [7, 2]]
         objectsInFOV = {}
+        # this stores the rightmost and leftmost coordinates of each blob
+        objectCoordinates = {}
 
         #camera samples surrounding images every 2/16 of a second
         if timer % 16 == 0:
@@ -305,6 +334,8 @@ def main():
             cameraData = camera4.getImage()
             imageWidth = camera4.getWidth()
             imageHeight = camera4.getHeight()
+            
+            imageColors = [[0 for x in range(imageWidth)] for y in range(imageHeight)]
 
             if image:
                 # display the components of each pixel
@@ -317,50 +348,23 @@ def main():
                         #convert to HSV and identify object
                         hsv = rgbToHSV(red, green, blue)
                         obj = get_object_name(hsv)
-                        # check for known obj and update dictionary with pixel coor of obj
                         if obj != -1:
-                            if obj in objectsInFOV:
-                                objectsInFOV[obj] = objectsInFOV.get(obj).append([x, y])
-                            else:
-                                objectsInFOV[obj] = [[x,y]]
-           
-                       
+                            if obj == "pink_berry"
+                            or obj == "orange_berry"
+                            or obj == "red_berry"
+                            or obj == "yellow_berry":
+                                pixelAngle = x/imageWidth * 100
+                                if pixelAngle > 25 or pixelAngle < 75:
+                                    state = MOVEFORWARD
+                            
+             # use the imageColor matrix to get the number of blobs and their centers
+             # and populate them into the objectCoordinates dictionary
+             # blobCounter = 0
+             # leftmost = imageWidth
+             # rightmost = 0
+             # objectCoordinates = get_object_centers(objectCoordinates, imageColors, imageWidth, imageHeight, blobCounter, leftmost, rightmost)
+             
 
-            # cameraData.np.getBuffer
-            #np --> get buffer .
-            # image = cv2.imread(imageArray)
-            # hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
-            # cv2.imshow("window", image)
-            # # indicate the lower and upper range for each color
-            # lower_range = np.array([110,50,50])
-            # upper_range = np.array([130,255,255])
-
-            # mask = cv2.inRange(hsv, lower_range, upper_range)
-            # cv2.imshow("Image", image)
-            # cv2.imshow("Mask", mask)
-
-            #check if any pixel is == to the 255 in the mask
-
-
-            
-        
-        
-        #moveForward()
-        #possible pseudocode for moving forward, then doing a 90 degree left turn
-        # if i < 100
-        #     base_forwards() #-> can implement in Python with Webots C code (/Zombie world/libraries/youbot_control) as an example or make your own
-        
-        # if == 100 
-        #     base_reset() 
-        #     base_turn_left()  
-        #     #it takes about 150 timesteps for the robot to complete the turn
-                 
-        # if i==300
-        #     i = 0
-        
-        # i+=1
-        
-        #make decisions using inputs if you choose to do so
          
         #------------------CHANGE CODE ABOVE HERE ONLY--------------------------
         
