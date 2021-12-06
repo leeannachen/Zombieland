@@ -38,6 +38,7 @@ def check_camera(camera4):
                     if obj == "pink_berry" or obj == "orange_berry" or obj == "red_berry" or obj == "yellow_berry":
                         # pixelAngle = x/imageWidth
                         # if pixelAngle > .25 or pixelAngle < .75:
+                        if hsv[0] < 13.6 or hsv[0] > 18:
                             frontBerry = 1
                             frontZombie = 0
                             print("front berry detected")
@@ -90,7 +91,7 @@ objectColors = {
     #berries
     "orange_berry" : [[10, 55, 30], [24.3, 56, 97]],      #conflicts with red_berries, tree, and floor; 3-sides: [21.4, 62, 87], [24.3, 56, 97], [10, 55, 30] <- problematic shaded side.
     "pink_berry" : [[295.3, 48, 31], [322,33,97]],        #unqiue hue
-    "red_berry" : [[5.3, 88, 96], [359, 82, 35]],         #huge hue range [4.7, 88, 96] to [6.6, 82, 100] is for the well lit facades while [359, 82, 35] covers the darkest side
+    "red_berry" : [[5.3, 88, 96], [6.6, 82, 100]],         #huge hue range [4.7, 88, 96] to [6.6, 82, 100] is for the well lit facades while [359, 82, 35] covers the darkest side
     "yellow_berry" : [[56, 100, 88], [58.5, 100, 31]],    #unique hue
     
     #world objects
@@ -239,18 +240,17 @@ def escapeObstacle(wheels,speeds):
             turn_right(wheels, speeds)
         go_backwards(wheels, speeds)
         
- def escapeZombie(wheels,speeds):
+def escapeZombie(wheels,speeds):
     while frontObstacle or frontZombie > 0:
         for x in range(0, 6):
             turn_right(wheels, speeds)
     go_forward(wheels, 14.6)
     
     
- def wander(wheels, speeds):
-    for x in range(0, 16):
-        for x in range(0, 6):
-            turn_right(wheels, speeds)
-        go_forward(wheels, speeds)
+def wander(wheels, speeds):
+    for x in range(0, 6):
+        turn_right(wheels, speeds)
+    go_forward(wheels, speeds)
 
 #------------------CHANGE CODE ABOVE HERE ONLY--------------------------
 
@@ -347,7 +347,6 @@ def main():
     angle = 0
 
     wheels = [fr, fl, br, bl]
-    testforward(wheels, 3.0)
     #------------------CHANGE CODE ABOVE HERE ONLY--------------------------
     
     imageWidth = camera4.getWidth()
@@ -383,19 +382,31 @@ def main():
         
      #------------------CHANGE CODE BELOW HERE ONLY--------------------------  
     
-        # initiate wheels        
-        finishedProcess = 0
+        # initiate wheels    
+        timeTick = 0    
+        i+=1
+        
         if(timer%16==0):
             check_camera(camera4)
             
-        if frontZombie > 0:
-            escapeZombie(speeds, 14.6)
-        elif frontObstacle:
-            escapeObstacle(speed, 14.6)
-        elif frontBerry > 0:
-            go_forward(wheels, 14.6)
-        else:
-            wander(speeds, 14.6)
+            
+        if(timer%32==0):     
+            if frontZombie > 0:
+                escapeZombie(wheels, 14.6)
+            elif frontObstacle:
+                escapeObstacle(wheels, 14.6)
+            elif frontBerry > 0:
+                go_forward(wheels, 14.6)
+            else:
+                if i % 10 == 0:
+                    timeTick = 1
+                if i %20 == 0:
+                    tieTick = 0
+                if timeTick == 1:
+                    turn_right(wheels, 10.0)
+                else:
+                    go_forward(wheels, 14.0)
+            
         
 
         #------------------CHANGE CODE ABOVE HERE ONLY--------------------------
