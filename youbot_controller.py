@@ -8,7 +8,7 @@ from youbot_zombie import *
 #------------------CHANGE CODE BELOW HERE ONLY--------------------------
 #define functions here for making decisions and using sensor inputs
 
-#----------------- CAMERA FUNCTIONS BELOW
+#################### CAMERA FUNCTIONS BELOW ####################
 def check_camera():
     obstacleProportion = {}
         
@@ -67,7 +67,7 @@ def check_camera():
      # and populate them into the objectCoordinates dictionary
      # objectCoordinates = get_object_centers(objectCoordinates, imageColors, imageWidth, imageHeight, blobCounter, leftmost, rightmost)
 
-#----------------- COLORFUNCTIONS BELOW
+#################### COLORFUNCTIONS BELOW ####################
 
 objectColors = {
 
@@ -133,7 +133,7 @@ def get_object_name(hsv):
             return key
     return -1
         
-#----------------- ROBOT MOVEMENT FUNCTIONS
+#################### ROBOT MOVEMENT FUNCTIONS ####################
 
 def set_speeds(wheels, speeds):
   for x in range(4):
@@ -160,7 +160,7 @@ def turn_left(wheels, SPEED):
     speeds = [SPEED, -SPEED, SPEED, -SPEED]
     set_speeds(wheels, speeds)
 
-#------------------RECEIVER FUNCTIONS
+#################### RECEIVER FUNCTIONS ####################
 
 def check_receiver():
     if receiver.getQueueLength() > 0:
@@ -169,6 +169,35 @@ def check_receiver():
         return 1
     else:
         return 0
+    
+#################### STATE MACHINE FUNCTIONS ####################
+
+# For berries world:
+def moveForward(wheels, speeds):
+    go_forward(wheels, 3.0)
+
+    if frontObstacle:
+        unstuck(wheels,speeds)
+    elif frontBerry > 0:
+        moveForward(wheels,speeds)
+    else:
+        wander(wheels, speeds)
+
+
+def wander(wheels, speeds):
+    # do a 420 degree sping
+    for x in range(0, 16):
+        if (frontBerry > 0):
+            moveForward(wheels,speeds)
+        turn_right(wheels, 3.0)
+        go_forward(wheels, 3.0)
+    moveForward(wheels,speeds)
+
+def unstuck(wheels,speeds):
+    while frontObstacle:
+        turn_right(wheels, 3.0)
+        go_backwards(wheels, 3.0)
+    wander(wheels, speeds)
 
 #------------------CHANGE CODE ABOVE HERE ONLY--------------------------
 
@@ -298,44 +327,10 @@ def main():
             
         timer += 1
         
-     #------------------CHANGE CODE BELOW HERE ONLY--------------------------   
-     
-     #------------------ Behavior Functions --------------------------
-
-     # movements: go_forward, go_backwards, turn_left, turn_right
-        
+     #------------------CHANGE CODE BELOW HERE ONLY--------------------------  
+    
         # initiate wheels
         wheels = [fr, fl, br, bl]
-
-        #PSEUDO CODE
-        
-        # if safe_berry:
-            # position berry camera to the middle
-             
-            # if robot_info[0] < 80 OR robot_info[1] < 70:
-               # go_forward(wheels, 16.0)
-            # else:
-                # go_forward(wheels, 10.0)
-        
-        # if moving forward:
-            # if section2clear and section3clear:
-                # go_forward(wheels, 10.0, 10.0)
-            # else:
-                # processSurrounding()
-        
-        # if processSurrounding State:
-            # if berryExists with No Zombies:
-                
-                # switchtocase SafeBerries
-        
-        
-        # turn right around 90 degrees 
-        # if angle > -11.8:
-            # turn_right(wheels, 3.0)
-        # else:
-            # go_forward(wheels, 3.0)
-
-        # angle = angle + values[2]
         
         
         if i % 16 == 0:
